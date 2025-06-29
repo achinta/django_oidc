@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django OIDC Authentication</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .auth-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .login-link {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .login-link:hover {
+            background-color: #0056b3;
+        }
+        .user-info {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .logout-form {
+            text-align: center;
+        }
+        .logout-btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Django OIDC Authentication Demo</h1>
+
+        <div class="auth-section">
+            {% if user.is_authenticated %}
+                <div class="user-info">
+                    <h3>Welcome!</h3>
+                    <p><strong>Current user:</strong> {{ user.email|default:user.username }}</p>
+                    <p><strong>First name:</strong> {{ user.first_name|default:"Not provided" }}</p>
+                    <p><strong>Last name:</strong> {{ user.last_name|default:"Not provided" }}</p>
+                </div>
+
+                <form action="{% url 'oidc_logout' %}" method="post" class="logout-form">
+                    {% csrf_token %}
+                    <input type="submit" value="Logout" class="logout-btn">
+                </form>
+            {% else %}
+                <p>You are not logged in.</p>
+                <a href="{% url 'oidc_authentication_init' %}" class="login-link">Login with Keycloak</a>
+            {% endif %}
+        </div>
+
+        {% if user.is_authenticated %}
+            <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 4px;">
+                <h4>Authentication Details:</h4>
+                <p><strong>User ID:</strong> {{ user.id }}</p>
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Is Staff:</strong> {{ user.is_staff|yesno:"Yes,No" }}</p>
+                <p><strong>Is Superuser:</strong> {{ user.is_superuser|yesno:"Yes,No" }}</p>
+                <p><strong>Date Joined:</strong> {{ user.date_joined }}</p>
+                <p><strong>Last Login:</strong> {{ user.last_login|default:"Never" }}</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
+
+
+
